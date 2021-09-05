@@ -1,0 +1,56 @@
+{
+    "users": [
+        {
+            "fname": "a",
+            "lname": "a",
+            "email": "a@a.com",
+            "password": "123",
+            "phone": "01015692849",
+            "id": 0
+        },
+        {
+            "fname": "osama",
+            "lname": "ragab",
+            "email": "osama@gmail.com",
+            "password": "123",
+            "phone": "01015692844",
+            "id": 1
+        },
+        {
+            "fname": "Noha",
+            "lname": "Shehab",
+            "email": "noha@iti.com",
+            "password": "123",
+            "phone": "01015692855",
+            "id": 1
+        }
+    ],
+    "projects": [
+        {
+            "user_id": 0,
+            "title": "Smart watch",
+            "details": "track your activites",
+            "target": 2000,
+            "start": "2021-09-04",
+            "end": 2000,
+            "id": 0
+        },
+        {
+            "user_id": 1,
+            "title": "Smart bike",
+            "details": "bike that help you navigate to given location",
+            "target": 5000,
+            "start": "2021-09-04",
+            "end": "2022-09-04",
+            "id": 1
+        }
+    ],
+    "funds": [
+        {
+            "user_id": 0,
+            "project_id": 0,
+            "amount": 100.0,
+            "id": 0
+        }
+    ]
+}
