@@ -2,20 +2,27 @@ from datetime import datetime, date
 import re
 
 
-def valid_input(message):
+def valid_input(message, allow_empty=False):
     # Prompet
-    data = None
-    while not data:
+    data = input(message).strip()
+    while not data and not allow_empty:
+        print('Empty string is not allowed')
         data = input(message).strip()
     return data
 
 
-def valid_number(message):
+def valid_number(message, allow_empty=False):
     while True:
+        value = None
         try:
             value = float(input(message))
-            return value
+            if value > 0:
+                return value
+            else:
+                print("Must be greater than 0")
         except:
+            if allow_empty and not value:
+                return value
             print('Enter a valid amount of money example 300')
 
 
@@ -42,12 +49,10 @@ def valid_id(message, id_list):
 
 def valid_date(message, allow_empty=False):
     while True:
+        end_date = input(message).strip()
         if allow_empty:
-            end_date = input(message).strip().lower()
             if not end_date:
                 return None
-        else:
-            end_date = valid_input(message)
         try:
             if date.fromisoformat(end_date) > datetime.now().date():
                 return end_date
@@ -55,23 +60,16 @@ def valid_date(message, allow_empty=False):
                 print('the date must be in the future')
         except ValueError:
             print('Bad date format example: 2021-05-01')
-            end_date = valid_input(message)
 
 
-def valid_email(database, message="Enter your Email: ", reg=False):
+def valid_email(message="Enter your Email: "):
     email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
     while True:
-        email = valid_input(message)
-        if reg:
-            if re.fullmatch(email_pattern, email) and email not in [user.email for user in database['users']]:
-                return email
-            else:
-                print('Invalid Email or already taken')
-        else:
-            if re.fullmatch(email_pattern, email):
-                return email
-            else:
-                print('Invalid Email')
+        email = input(message).strip()
+        vaild = re.fullmatch(email_pattern, email)
+        if vaild:
+            return email
+        print('Invalid Email')
 
 
 def valid_password(message="Enter your password: "):
@@ -97,3 +95,14 @@ def valid_phone(database, message="Enter your phone: "):
             return phone
         else:
             print('Invalid phone or already taken')
+
+
+def matches(ref_obj, obj):
+    # handling empty obj
+    if type(ref_obj) != type(obj):
+        raise ValueError
+    for attr, value in vars(obj).items():
+        if value is not None and attr != 'id' and value != getattr(ref_obj, attr):
+            return False
+
+    return True

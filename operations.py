@@ -1,30 +1,37 @@
 from classes import Project, Fund, User
-from validators import valid_date, valid_id, valid_number
+from validators import valid_date, valid_id, valid_number, matches, valid_input
 from datetime import datetime
 from tabulate import tabulate
 import json
 
 
+def prompt_project(database, user, isEdit=False):
+
+    message = 'Enter new ' if isEdit else 'Enter '
+    while True:
+        title = valid_input(message + 'project title: ', isEdit).capitalize()
+        if (isEdit and not title) or not does_exist(database['projects'], Project(title=title)):
+            break
+    details = input(message + 'project description: ')
+    target = valid_number(message + 'fund target for your project: ', isEdit)
+    start = str(datetime.now().date())
+    end = valid_date(
+        message + 'end date of your campaign formatted as yyyy-mm-dd: ', isEdit)
+    project = user.start_project(title, details, target, start, end)
+    return project
+
+
 def start_project(database, user):
-    try:
-        title = input('Enter your project title: ').strip().capitalize()
-        details = input('Descripe your project: ')
-        target = valid_number('How much you want to raise for your project: ')
-        start = str(datetime.now().date())
-        end = valid_date(
-            'Enter end date of  your campaign formatted as yyyy-mm-dd: ')
-        project = user.start_project(title, details, target, start, end)
-        database['projects'].append(project)
-        print('Project created successfully')
-        print('------------------------------')
-    except Exception as e:
-        print(f'Something went wrong, error type: {e}')
+
+    database['projects'].append(prompt_project(database, user))
+    print('Project created successfully')
+    print('------------------------------')
 
 
 def get_project_by_id(database, project_id):
     # not effiect || sequential scan || Time complexity: O(n)
     # could be improved by using binary search if the data is always sorted || Time complexity: Log(n)
-    # Sorting by (User: email, Project: id)
+    # Sorting by (User: email, Project:  )
     for project in database['projects']:
         if project.id == project_id:
             return project
@@ -47,6 +54,17 @@ def view(database, user=None):
     project_id = valid_id(
         'Type project id that you are interested in: ', [project[0] for project in projects])
     return get_project_by_id(database, project_id)
+
+
+def edit(database, user, project):
+    print("leave field empty if you don't want to change a certain field")
+    project.edit(prompt_project(database, user, True))
+
+
+def delete(database, project):
+    database['projects'].remove(project)
+    print("Project deleted successfully")
+    print("-------------------------------------")
 
 
 def fund(database, project, user):
@@ -86,3 +104,10 @@ def save(database, filename='data.txt'):
         for key in database.keys():
             database[key] = list(map(vars, database[key]))
         json.dump(database, f, indent=4)
+
+
+def does_exist(records, obj):
+    for record in records:
+        if matches(record, obj):
+            return True
+    return False
